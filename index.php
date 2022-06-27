@@ -1,8 +1,6 @@
 #!/bin/env php
 <?php
 
-require_once __DIR__ . "/helpers.php";
-
 // Main function call
 var_dump(parseConfigFile(__DIR__ . "/config.txt"));
 
@@ -12,7 +10,7 @@ function parseConfigFile(string $configFilePath): array
     $configFile = new \SplFileObject($configFilePath);
 
     foreach ($configFile as $line) {
-        if (textIsEmpty($line)) {
+        if (empty(trim($line))) {
             continue;
         }
 
