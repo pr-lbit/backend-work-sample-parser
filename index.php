@@ -14,17 +14,17 @@ function parseConfigFile(string $configFilePath): array
             continue;
         }
 
-        $lineComponents = [];
-        if (preg_match("/\s*([\w\.]+)\s*\=\s*(.+)$/", $line, $lineComponents) !== 1) {
+        $configLineComponents = [];
+        if (preg_match("/\s*([\w\.]+)\s*\=\s*(.+)$/", $line, $configLineComponents) !== 1) {
             continue;
         }
 
-        if (sizeof($lineComponents) < 3) {
+        if (sizeof($configLineComponents) < 3) {
             continue;
         }
 
-        $configKey = $lineComponents[1];
-        $configValue = $lineComponents[2];
+        $configKey = $configLineComponents[1];
+        $configValue = $configLineComponents[2];
 
         $configArray = array_merge_recursive($configArray, getConfigAsArray($configKey, $configValue));
     }
@@ -34,16 +34,16 @@ function parseConfigFile(string $configFilePath): array
 
 function getConfigAsArray(string $configKey, string $configValue): array
 {
-    $configKeys = explode('.', trim($configKey), 2);
-    if (sizeof($configKeys) === 1) {
+    $configKeySegments = explode('.', trim($configKey), 2);
+    if (sizeof($configKeySegments) === 1) {
         return [
-            $configKeys[0] => getTypedValueFromString($configValue)
+            $configKeySegments[0] => getTypedValueFromString($configValue)
         ];
     }
 
-    $currentKey = $configKeys[0];
+    $currentKey = $configKeySegments[0];
     return [
-        $currentKey => getConfigAsArray($configKeys[1], $configValue)
+        $currentKey => getConfigAsArray($configKeySegments[1], $configValue)
     ];
 }
 
