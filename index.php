@@ -66,4 +66,6 @@ function getTypedValueFromString(string $configValueString)
     if (preg_match("/^\d+$/", $quoteLessConfigValue) === 1) {
         return (int) $quoteLessConfigValue;
     }
+
+    throw new \Exception("Unrecognised config value type.");
 }
