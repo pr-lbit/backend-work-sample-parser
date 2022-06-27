@@ -1,10 +1,12 @@
 #!/bin/env php
 <?php
 
-// Main function call
-var_dump(parse(__DIR__ . "/config.txt"));
+require_once __DIR__ . "/helpers.php";
 
-function parse(string $configFilePath): array
+// Main function call
+var_dump(parseConfigFile(__DIR__ . "/config.txt"));
+
+function parseConfigFile(string $configFilePath): array
 {
     $configArray = [];
     $configFile = new \SplFileObject($configFilePath);
@@ -14,31 +16,22 @@ function parse(string $configFilePath): array
             continue;
         }
 
-        $config = explode("=", $line, 2);
-
-        if (sizeof($config) < 2) {
+        $lineComponents = [];
+        if (preg_match("/\s*([\w\.]+)\s*\=\s*(.+)$/", $line, $lineComponents) !== 1) {
             continue;
         }
 
-        $configKeyComponents = preg_split("/\s+/", trim($config[0]));
-        $configKey = end($configKeyComponents);
+        if (sizeof($lineComponents) < 3) {
+            continue;
+        }
 
-        $configValue = trim($config[1]);
+        $configKey = $lineComponents[1];
+        $configValue = $lineComponents[2];
 
         $configArray = array_merge_recursive($configArray, getConfigAsArray($configKey, $configValue));
     }
 
     return $configArray;
-}
-
-function textIsEmpty(string $text): bool
-{
-    return empty(trim($text));
-}
-
-function textBeginsWithHash(string $text): bool
-{
-    return $text[0] === "#";
 }
 
 function getConfigAsArray(string $configKey, string $configValue): array
@@ -64,7 +57,7 @@ function getTypedValueFromString(string $configValueString)
         return $quoteLessConfigValue;
     }
 
-    if ($quoteLessConfigValue === "true" ) {
+    if ($quoteLessConfigValue === "true") {
         return true;
     }
 
